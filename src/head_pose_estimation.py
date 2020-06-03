@@ -70,7 +70,9 @@ class Model_pose:
         '''
         
         #shape = self.model.outputs[self.output_blob].shape
-        angle_p_fc = outputs['angle_p_fc'].flatten()
-        angle_r_fc = outputs['angle_r_fc'].flatten()
-        angle_y_fc = outputs['angle_y_fc'].flatten()
-        return None
+        pitch = outputs['angle_p_fc'].flatten()
+        roll = outputs['angle_r_fc'].flatten()
+        yaw = outputs['angle_y_fc'].flatten()
+        coords =[yaw, pitch, roll]
+        print(coords)
+        return coords

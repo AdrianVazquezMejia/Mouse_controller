@@ -12,7 +12,7 @@ def build_argparser():
     parser.add_argument("-f","--face", required=False,default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP32/face-detection-retail-0005')
     parser.add_argument("-l","--landmarks", required=False,default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009')
     parser.add_argument("-p","--head", required=False,default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001')
-    parser.add_argument("-i","--input", required=False,default='/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
+    parser.add_argument("-i","--input", required=False,default='/home/adrian-estelio/Documents/vision/Mouse_controller/resources/i2.jpg')
     return parser
 
 def infer_on_stream(args):
