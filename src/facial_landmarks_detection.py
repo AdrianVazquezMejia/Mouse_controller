@@ -47,8 +47,20 @@ class Model_landmarks:
         self.output_blob = next(iter(self.model.outputs))
         output = self.net.requests[0].outputs[self.output_blob]
         coords = self.preprocess_output(output)
-        out_frame = self.draw_outputs(coords, image)
-        return out_frame
+        out_frame = None
+        reye = None 
+        leye = None
+        if len(coords)>0:
+            reye,leye = self.crop_eyes(coords, image)
+            out_frame = self.draw_outputs(coords, image)            
+        return out_frame, reye, leye
+    def crop_eyes(self, coord, image):
+        delta = 30
+        left = image[coord[3]-delta:coord[3]+delta,coord[2]-delta:coord[2]+delta]
+        right = image[coord[1]-delta:coord[1]+delta,coord[0]-delta:coord[0]+delta]     
+        cv2.imwrite('r.jpg',right)
+        cv2.imwrite('l.jpg',left)
+        return right, left
     def draw_outputs(self, coords, image):
         #for coord in coords:
         cv2.circle(image,(coords[0],coords[1]),2,(0,0,255),2)
@@ -79,7 +91,6 @@ class Model_landmarks:
         you might have to preprocess the output. This function is where you can do that.
         '''
         arr = outputs.flatten()
-        print(arr)
         matrix = [arr[i]*self.height if i%2 else arr[i]*self.width for i,_ in enumerate(arr)]
         *matrix, = map(int,matrix)
         print(matrix)
