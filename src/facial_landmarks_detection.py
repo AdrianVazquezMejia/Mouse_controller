@@ -41,7 +41,6 @@ class Model_landmarks:
         This method is meant for running predictions on the input image.
         '''
         self.height, self.width, self.channels = image.shape
-        print(self.height,self.width)
         input_image = self.preprocess_input(image)
         self.net.infer({self.input_blob:input_image})
         self.output_blob = next(iter(self.model.outputs))
@@ -52,13 +51,15 @@ class Model_landmarks:
         leye = None
         if len(coords)>0:
             reye,leye = self.crop_eyes(coords, image)
-            out_frame = self.draw_outputs(coords, image)   
-            cv2.imwrite('r1.jpg',reye)         
+            out_frame = self.draw_outputs(coords, image)            
         return out_frame, reye, leye
     def crop_eyes(self, coord, image):
         delta = 30
         left = image[coord[3]-delta:coord[3]+delta,coord[2]-delta:coord[2]+delta]
-        right = image[coord[1]-delta:coord[1]+delta,coord[0]-delta:coord[0]+delta]     
+        if coord[0]<30:
+            right =left
+        else:
+            right = image[coord[1]-delta:coord[1]+delta,coord[0]-delta:coord[0]+delta]     
         return right, left
 
     def draw_outputs(self, coords, image):
@@ -82,7 +83,6 @@ class Model_landmarks:
         frame = cv2.resize(image, (shape[3],shape[2]))
         frame =frame.transpose((2,0,1))
         frame = frame.reshape(1,*frame.shape)
-        print("Face preprocessed successfully")
         return frame
 
     def preprocess_output(self, outputs):
@@ -93,6 +93,5 @@ class Model_landmarks:
         arr = outputs.flatten()
         matrix = [arr[i]*self.height if i%2 else arr[i]*self.width for i,_ in enumerate(arr)]
         *matrix, = map(int,matrix)
-        print(matrix)
         return matrix
         

@@ -40,7 +40,6 @@ class Model_pose:
         This method is meant for running predictions on the input image.
         '''
         self.height, self.width, self.channels = image.shape
-        print(self.height,self.width)
         input_image = self.preprocess_input(image)
         self.net.infer({self.input_blob:input_image})
         self.output_blob = next(iter(self.model.outputs))
@@ -61,7 +60,6 @@ class Model_pose:
         frame = cv2.resize(image, (shape[3],shape[2]))
         frame =frame.transpose((2,0,1))
         frame = frame.reshape(1,*frame.shape)
-        print("Pose preprocessed successfully")
         return frame
 
     def preprocess_output(self, outputs):
@@ -75,5 +73,5 @@ class Model_pose:
         roll = outputs['angle_r_fc'].flatten()
         yaw = outputs['angle_y_fc'].flatten()
         coords =[yaw, pitch, roll]
-        print(coords)
+        #print(coords)
         return coords

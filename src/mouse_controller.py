@@ -8,14 +8,31 @@ will move the pointer.
 This class is provided to help get you started; you can choose whether you want to use it or create your own from scratch.
 '''
 import pyautogui
+import multiprocessing as mp
 
 class MouseController:
     def __init__(self, precision, speed):
-        precision_dict={'high':100, 'low':1000, 'medium':500}
-        speed_dict={'fast':1, 'slow':10, 'medium':5}
-
+        precision_dict={'high':5, 'low':1000, 'medium':500}
+        speed_dict={'fast':0.001, 'slow':10, 'medium':5}
         self.precision=precision_dict[precision]
         self.speed=speed_dict[speed]
 
     def move(self, x, y):
         pyautogui.moveRel(x*self.precision, -1*y*self.precision, duration=self.speed)
+    def position(self):
+        x, y= pyautogui.position()
+        return x,y
+def mover(x,y):
+    mouse = MouseController('high','fast')
+    mouse.move(0,-10)
+    print(x,y)
+
+def main():
+    print("Main init")
+    pool = mp.Pool(1)
+    x, y = 1,1
+    print(mp.cpu_count())
+    pool.apply(mover,args=(x,y))
+
+if __name__ == '__main__':
+    main()

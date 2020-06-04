@@ -7,11 +7,15 @@ import numpy as np
 import cv2
 import sys
 import os
+def roundx(x):
+    if x[0]<0:
+        x[0]=0
+    return x
 class Model_face_detection:
     '''
     Class for the Face Detection Model.
     '''
-    def __init__(self, model_name, device='CPU', threshold = 0.8):
+    def __init__(self, model_name, device='CPU', threshold = 0.4):
         '''
         TODO: Use this to set your instance variables.
         '''
@@ -39,19 +43,20 @@ class Model_face_detection:
         TODO: You will need to complete this method.
         This method is meant for running predictions on the input image.
         '''
+        crop_frame= []
+        out_frame = image
         self.height, self.width, self.channels = image.shape
-        print(self.height,self.width)
         input_image = self.preprocess_input(image)
         self.net.infer({self.input_blob:input_image})
         self.output_blob = next(iter(self.model.outputs))
         output = self.net.requests[0].outputs[self.output_blob]
-        coords = self.preprocess_output(output)
-        out_frame = self.draw_outputs(coords, image)
-        crop_frame =self.crop(coords,image)
+        coords, detect = self.preprocess_output(output)
+        if detect:
+            out_frame = self.draw_outputs(coords, image)
+            crop_frame =self.crop(coords,image)
         return out_frame, crop_frame
 
     def draw_outputs(self, coords, image):
-        print(coords)
         for coord in coords:
             cv2.rectangle(image,(coord[0],coord[1]),(coord[2],coord[3]),(0,255,0),1)
         return image
@@ -69,7 +74,6 @@ class Model_face_detection:
         frame = cv2.resize(image, (shape[3],shape[2]))
         frame =frame.transpose((2,0,1))
         frame = frame.reshape(1,*frame.shape)
-        print("Image preprocessed successfully")
         return frame
 
     def preprocess_output(self, outputs):
@@ -77,17 +81,18 @@ class Model_face_detection:
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.
         '''
+        flag = False
         arr = outputs.flatten()
         matrix = np.reshape(arr,(-1,7))
         matrix = [item for item in matrix if item[2]> self.threshold]
         if len(matrix)>0:
+            flag = True
             *matrix, = map(lambda x: x[3:7],matrix)
             matrix = np.array(matrix)
-            print(matrix)
             matrix[:,0] =matrix[:,0]*self.width
             matrix[:,2] =matrix[:,2]*self.width
             matrix[:,1] =matrix[:,1]*self.height
             matrix[:,3] =matrix[:,3]*self.height
             *matrix, = map(lambda x: list(map(int,x)), matrix)
-        print("Matrix created")
-        return matrix
+            *matrix, = map(roundx, matrix)
+        return matrix, flag

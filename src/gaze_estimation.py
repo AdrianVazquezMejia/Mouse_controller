@@ -64,7 +64,6 @@ class Model_gaze:
         frame2 = cv2.resize(left, (im_shape[3],im_shape[2]))
         frame2 = frame2.transpose((2,0,1))
         frame2 = frame2.reshape(1,*frame2.shape)
-        print("Gaze preprocessed successfully", frame1.shape)
         return frame1,frame2
 
     def preprocess_output(self, outputs):
