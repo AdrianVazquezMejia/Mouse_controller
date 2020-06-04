@@ -43,11 +43,10 @@ class Model_gaze:
             input_image1,input_image2  = self.preprocess_input(right_eye,left_eye)
             input_dict = {'right_eye_image':input_image1,'left_eye_image':input_image2,'head_pose_angles':[angles] }
             self.net.infer(input_dict)
-            print("Hasta aqui vamos bien ")
             self.output_blob = next(iter(self.model.outputs))
             output = self.net.requests[0].outputs
             coords = self.preprocess_output(output)
-        return None
+        return coords
 
     def check_model(self):
         raise NotImplementedError
@@ -74,8 +73,5 @@ class Model_gaze:
         you might have to preprocess the output. This function is where you can do that.
         '''
         coords= outputs[self.output_blob].flatten()
-        #roll = outputs['angle_r_fc'].flatten()
-        #yaw = outputs['angle_y_fc'].flatten()
-        #coords =[yaw, pitch, roll]
         print(coords)
         return coords
