@@ -52,15 +52,15 @@ class Model_landmarks:
         leye = None
         if len(coords)>0:
             reye,leye = self.crop_eyes(coords, image)
-            out_frame = self.draw_outputs(coords, image)            
+            out_frame = self.draw_outputs(coords, image)   
+            cv2.imwrite('r1.jpg',reye)         
         return out_frame, reye, leye
     def crop_eyes(self, coord, image):
         delta = 30
         left = image[coord[3]-delta:coord[3]+delta,coord[2]-delta:coord[2]+delta]
         right = image[coord[1]-delta:coord[1]+delta,coord[0]-delta:coord[0]+delta]     
-        cv2.imwrite('r.jpg',right)
-        cv2.imwrite('l.jpg',left)
         return right, left
+
     def draw_outputs(self, coords, image):
         #for coord in coords:
         cv2.circle(image,(coords[0],coords[1]),2,(0,0,255),2)

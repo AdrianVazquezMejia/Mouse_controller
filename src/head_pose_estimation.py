@@ -46,6 +46,7 @@ class Model_pose:
         self.output_blob = next(iter(self.model.outputs))
         output = self.net.requests[0].outputs
         coords = self.preprocess_output(output)
+        return coords
 
     def check_model(self):
         raise NotImplementedError

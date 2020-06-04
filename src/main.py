@@ -1,6 +1,7 @@
 from  face_detection import Model_face_detection
 from  facial_landmarks_detection import Model_landmarks
 from  head_pose_estimation import Model_pose
+from  gaze_estimation import Model_gaze
 from argparse import ArgumentParser
 import cv2
 import os
@@ -12,6 +13,7 @@ def build_argparser():
     parser.add_argument("-f","--face", required=False,default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP32/face-detection-retail-0005')
     parser.add_argument("-l","--landmarks", required=False,default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009')
     parser.add_argument("-p","--head", required=False,default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001')
+    parser.add_argument("-g","--gaze", required=False,default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002')
     parser.add_argument("-i","--input", required=False,default='/home/adrian-estelio/Documents/vision/Mouse_controller/resources/i2.jpg')
     return parser
 
@@ -22,6 +24,8 @@ def infer_on_stream(args):
     landmarks_model.load_model()
     head_model = Model_pose(args.head)
     head_model.load_model()
+    gaze_model = Model_gaze(args.gaze)
+    gaze_model.load_model()
     single_image = False
 
     if args.input == 'CAM':
@@ -47,12 +51,14 @@ def infer_on_stream(args):
         key_pressed = cv2.waitKey(1)
         star= time.time()
         frame, face = face_model.predict(image)
-        print("time in land is {} ms ".format(time.time()-star))
-        
-        land = landmarks_model.predict(face)
-        head_model.predict(face)
+        print("time in land is {} ms ".format(time.time()-star))       
+        _,r,l = landmarks_model.predict(face)
+        angles= head_model.predict(face)
+        gaze_model.predict(r,l,angles)
         cv2.imshow('frame',frame)        
         if single_image:
+            cv2.imwrite('r.jpg',r)
+            cv2.imwrite('l.jpg',l)
             cv2.imwrite('frame.jpg',frame)
             break
         if key_pressed == 27:
