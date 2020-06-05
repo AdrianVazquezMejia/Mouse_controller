@@ -4,6 +4,7 @@ from  head_pose_estimation import Model_pose
 from  gaze_estimation import Model_gaze
 from argparse import ArgumentParser
 from mouse_controller import MouseController
+from input_feeder import InputFeeder
 import cv2
 import os
 import sys
@@ -17,21 +18,21 @@ def build_argparser():
     parser.add_argument("-l","--landmarks", required=False,default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009')
     parser.add_argument("-p","--head", required=False,default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001')
     parser.add_argument("-g","--gaze", required=False,default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002')
-    parser.add_argument("-i","--input", required=False,default='/home/adrian-estelio/Documents/vision/Mouse_controller/bin/local2.webm')
+    parser.add_argument("-i","--input", required=False,default='/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
     return parser
 def move(coor):
     mouse= MouseController('high','fast')
     print("moving")
-    if coor[0]<-0.31 and coor[1]<0.1:
+    if coor[0]<-0.33 and coor[1]>-0.05 and coor[1]<0.05:
         print(moveto[3])
         mouse.move(1,0)
-    elif coor[0]>0.1 and coor[1]<-0.2:
+    elif coor[0]>0.33 and coor[1]<0:
         print(moveto[2])
         mouse.move(-1,0)
-    elif coor[1]<0 and coor[1]>-0.1 and coor[0]<0.25:
+    elif coor[1]>0.11 and coor[0]>-0.17:
         print(moveto[0])
         mouse.move(0,1)
-    elif coor[1]<-0.29 and coor[0]<-0.2:
+    elif coor[0]>-0.05  and coor[1]<-0.13:
         print(moveto[1])
         mouse.move(0,-1)
 def infer_on_stream(args):
@@ -43,28 +44,29 @@ def infer_on_stream(args):
     head_model.load_model()
     gaze_model = Model_gaze(args.gaze)
     gaze_model.load_model()
-    single_image = False
 
-    pool = mp.Pool(2)
+    
     if args.input == 'CAM':
-        input_stream = 0
+        feeder= InputFeeder('CAM')
     elif args.input.endswith('.jpg') or args.input.endswith('.bmp'):
-        single_image = True
-        input_stream = args.input
+        feeder= InputFeeder('image',args.input)
     else:
-        input_stream = args.input
+        feeder= InputFeeder('video',args.input)
         if not os.path.isfile(args.input):
             log.error("Specified input file doesn't exist")
             sys.exit(1)
-
-    cap = cv2.VideoCapture(input_stream)
-    if input_stream :
-        cap.open(args.input)
-    if not cap.isOpened():
+    feeder.load_data()
+    #cap = cv2.VideoCapture(input_stream)
+    width = feeder.width
+    height = feeder.height
+    fps = feeder.fps
+    out = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'avc1'), fps, (width,height),True)
+    feeder.open()
+    if not feeder.opened:
         log.error("Unable to open source")
-    while cap.isOpened():
-        flag,image = cap.read()
-        if not flag:
+    while feeder.opened:
+        image = feeder.next_batch()
+        if not feeder.opened:
             break
         key_pressed = cv2.waitKey(1)
         start= time.time()
@@ -75,15 +77,17 @@ def infer_on_stream(args):
             angles= head_model.predict(face)
             vector = gaze_model.predict(r,l,angles)
             move(vector)
-        cv2.imshow('frame',frame)        
-        if single_image:
+        out.write(frame)
+        cv2.imshow('frame',frame)               
+        if feeder.input_type == 'image':
             cv2.imwrite('r.jpg',r)
             cv2.imwrite('l.jpg',l)
             cv2.imwrite('frame.jpg',frame)
             break
         if key_pressed == 27:
             break
-    pool.close()
+    out.release()
+    feeder.close
 def main():
     print("Main init")
     args =build_argparser().parse_args()
