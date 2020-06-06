@@ -7,6 +7,7 @@ import numpy as np
 import cv2
 import sys
 import os
+import time
 def roundx(x):
     if x[0]<0:
         x[0]=0
@@ -47,7 +48,9 @@ class Model_face_detection:
         out_frame = image
         self.height, self.width, self.channels = image.shape
         input_image = self.preprocess_input(image)
+        infer_time = time.time() 
         self.net.infer({self.input_blob:input_image})
+        print("Face infer time is {}".format(time.time()-infer_time))
         self.output_blob = next(iter(self.model.outputs))
         output = self.net.requests[0].outputs[self.output_blob]
         coords, detect = self.preprocess_output(output)
