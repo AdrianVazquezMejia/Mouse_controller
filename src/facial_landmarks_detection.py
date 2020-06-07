@@ -9,7 +9,7 @@ class Model_landmarks:
     '''
     Class for the Face Detection Model.
     '''
-    def __init__(self, model_name, device='CPU', extensions=None, threshold = 0.5):
+    def __init__(self, model_name, device='CPU', _extensions=None, threshold = 0.5):
         '''
         TODO: Use this to set your instance variables.
         '''
