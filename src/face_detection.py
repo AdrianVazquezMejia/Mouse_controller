@@ -8,6 +8,7 @@ import cv2
 import sys
 import os
 import time
+import logging as log
 def roundx(x):
     if x[0]<0:
         x[0]=0
@@ -37,7 +38,7 @@ class Model_face_detection:
         self.core = IECore()
         self.model = IENetwork(self.model_structure, self.model_weights)
         self.net = self.core.load_network(network=self.model,device_name=self.device)
-        print("Model loaded")
+        log.info("Model loaded")
 
     def predict(self, image):
         '''
@@ -47,10 +48,8 @@ class Model_face_detection:
         crop_frame= []
         out_frame = image
         self.height, self.width, self.channels = image.shape
-        input_image = self.preprocess_input(image)
-        infer_time = time.time() 
+        input_image = self.preprocess_input(image) 
         self.net.infer({self.input_blob:input_image})
-        print("Face infer time is {}".format(time.time()-infer_time))
         self.output_blob = next(iter(self.model.outputs))
         output = self.net.requests[0].outputs[self.output_blob]
         coords, detect = self.preprocess_output(output)

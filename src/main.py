@@ -14,29 +14,30 @@ import multiprocessing as mp
 moveto=['arriba','abajo', 'izquierda', 'derecha']
 def build_argparser():
     parser= ArgumentParser()
-    parser.add_argument("-f","--face", required=False,default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP32-INT8/face-detection-retail-0005')
-    parser.add_argument("-l","--landmarks", required=False,default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009')
-    parser.add_argument("-p","--head", required=False,default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001')
-    parser.add_argument("-g","--gaze", required=False,default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002')
-    parser.add_argument("-i","--inp", required=False,default='CAM')#/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
+    parser.add_argument("--face", required=False,help= "Face detecion model path ",default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP32-INT8/face-detection-retail-0005')
+    parser.add_argument("--landmarks", required=False,help= "landmarks detection model path ", default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009')
+    parser.add_argument("--head", required=False,help= "head pose estimation model path ",default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001')
+    parser.add_argument("--gaze", required=False,help= "Gaze estimation model path ",default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002')
+    parser.add_argument("--input", required=False,help="Input: image or  video path or webcam (CAM) ", default='CAM')#/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
+    parser.add_argument("--visual_o",required=False,help="Flag to display face: True or False", default="True")
     return parser
 def move(coor):
     mouse= MouseController('high','fast')
-    print("moving")
+    log.info("Moving")
     if coor[0]<-0.33 and coor[1]>-0.05 and coor[1]<0.05:
-        print(moveto[3])
+        log.info("Moving to %s",moveto[3])
         mouse.move(1,0)
     elif coor[0]>0.33 and coor[1]<0:
-        print(moveto[2])
+        log.info("Moving to %s",moveto[2])
         mouse.move(-1,0)
     elif coor[1]>0.11 and coor[0]>-0.17:
-        print(moveto[0])
+        log.info("Moving to %s",moveto[0])
         mouse.move(0,1)
     elif coor[0]>-0.05  and coor[1]<-0.13:
-        print(moveto[1])
+        log.info("Moving to %s",moveto[1])
         mouse.move(0,-1)
 def infer_on_stream(args):
-    model_time = time.time()
+
     face_model = Model_face_detection(args.face)
     face_model.load_model()
     landmarks_model = Model_landmarks(args.landmarks)
@@ -45,7 +46,6 @@ def infer_on_stream(args):
     head_model.load_model()
     gaze_model = Model_gaze(args.gaze)
     gaze_model.load_model()
-    print("Model loading time is {}".format(time.time()-model_time))
     
     if args.input == 'CAM':
         feeder= InputFeeder('CAM')
@@ -60,7 +60,7 @@ def infer_on_stream(args):
     width = feeder.width
     height = feeder.height
     fps = feeder.fps
-    out = cv2.VideoWriter('out.mp4', cv2.VideoWriter_fourcc(*'avc1'), fps, (width,height),True)
+    out = cv2.VideoWriter('output/out.mp4', cv2.VideoWriter_fourcc(*'avc1'), fps, (width,height),True)
     feeder.open()
     if not feeder.opened:
         log.error("Unable to open source")
@@ -71,31 +71,24 @@ def infer_on_stream(args):
         key_pressed = cv2.waitKey(1)
         frame, face = face_model.predict(image)
         if len(face)>0:
-            start= time.time()    
             _,r,l = landmarks_model.predict(face)
-            print("Infer time landmarks is {} s ".format(time.time()-start))
-            start= time.time()
             angles= head_model.predict(face)
-            print("Infer time head pose is {} s".format(time.time()-start))
-            start= time.time()
             vector = gaze_model.predict(r,l,angles)
-            print("Infer time gaze is {} s".format(time.time()-start))
-            start= time.time()
             move(vector)
-            print("Move time is {} s ".format(time.time()-start))
         out.write(frame)
-        cv2.imshow('frame',frame)               
+        if args.visual_o == 'True':
+            cv2.imshow('frame',frame)               
         if feeder.input_type == 'image':
-            cv2.imwrite('r.jpg',r)
-            cv2.imwrite('l.jpg',l)
-            cv2.imwrite('frame.jpg',frame)
+            cv2.imwrite('output/r.jpg',r)
+            cv2.imwrite('output/l.jpg',l)
+            cv2.imwrite('output/frame.jpg',frame)
             break
         if key_pressed == 27:
             break
     out.release()
     feeder.close
 def main():
-    print("Main init")
+    log.info("Aplication started")
     args =build_argparser().parse_args()
     infer_on_stream(args)
    

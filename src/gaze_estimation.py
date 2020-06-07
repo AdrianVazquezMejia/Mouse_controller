@@ -72,5 +72,4 @@ class Model_gaze:
         you might have to preprocess the output. This function is where you can do that.
         '''
         coords= outputs[self.output_blob].flatten()
-        print(coords)
         return coords

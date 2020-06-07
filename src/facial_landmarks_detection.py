@@ -53,6 +53,7 @@ class Model_landmarks:
             reye,leye = self.crop_eyes(coords, image)
             out_frame = self.draw_outputs(coords, image)            
         return out_frame, reye, leye
+        
     def crop_eyes(self, coord, image):
         delta = 30
         left = image[coord[3]-delta:coord[3]+delta,coord[2]-delta:coord[2]+delta]
