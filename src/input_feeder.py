@@ -17,7 +17,7 @@ class InputFeeder:
         input_file: str, The file that contains the input image or video file. Leave empty for cam input_type.
         '''
         self.input_type=input_type
-        if input_type=='video' or input_type=='image':
+        if input_type in ('video', 'image'):
             self.input_file=input_file
         if input_type == 'CAM':
             self.input_file = 0
