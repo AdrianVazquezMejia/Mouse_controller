@@ -84,7 +84,7 @@ def infer_on_stream(args):
         if key_pressed == 27:
             break
     out.release()
-    feeder.close
+    feeder.close()
 def main():
     log.basicConfig(level=log.INFO)
     log.info("Aplication started")

@@ -36,7 +36,7 @@ class Model_gaze:
         This method is meant for running predictions on the input image.
         '''
         coords = None 
-        if right_eye and left_eye and angles:
+        if len(right_eye)>0 and len(left_eye)>0 and len(angles)>0:
             input_image1,input_image2  = self.preprocess_input(right_eye,left_eye)
             input_dict = {'right_eye_image':input_image1,'left_eye_image':input_image2,'head_pose_angles':[angles] }
             self.net.infer(input_dict)
