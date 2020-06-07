@@ -21,6 +21,10 @@ class Model_landmarks:
         self.device = device
         self.threshold = threshold
         self.output_blob = None
+        self.height = None
+        self.width = None 
+        self.channels = None
+        self.input_blob = None 
 
     def load_model(self):
         '''crop

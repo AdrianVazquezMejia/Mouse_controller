@@ -22,6 +22,10 @@ class InputFeeder:
         if input_type == 'CAM':
             self.input_file = 0
         self.opened = False
+        self.cap = None
+        self.width = None
+        self.height = None
+        self.fps = None
     
     def load_data(self):
         self.cap=cv2.VideoCapture(self.input_file)
