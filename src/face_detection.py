@@ -29,6 +29,7 @@ class Model_face_detection:
         self.height = None 
         self.width = None 
         self.channels = None 
+        self.input_blob = None
 
     def load_model(self):
         '''
