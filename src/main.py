@@ -14,11 +14,11 @@ import multiprocessing as mp
 moveto=['arriba','abajo', 'izquierda', 'derecha']
 def build_argparser():
     parser= ArgumentParser()
-    parser.add_argument("-f","--face", required=False,default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP16/face-detection-retail-0005')
-    parser.add_argument("-l","--landmarks", required=False,default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009')
-    parser.add_argument("-p","--head", required=False,default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001')
-    parser.add_argument("-g","--gaze", required=False,default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002')
-    parser.add_argument("-i","--input", required=False,default='/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
+    parser.add_argument("-f","--face", required=False,default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP32-INT8/face-detection-retail-0005')
+    parser.add_argument("-l","--landmarks", required=False,default='/home/adrian-estelio/Documents/vision/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009')
+    parser.add_argument("-p","--head", required=False,default='/home/adrian-estelio/Documents/vision/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001')
+    parser.add_argument("-g","--gaze", required=False,default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002')
+    parser.add_argument("-i","--inp", required=False,default='CAM')#/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
     return parser
 def move(coor):
     mouse= MouseController('high','fast')
@@ -81,9 +81,8 @@ def infer_on_stream(args):
             vector = gaze_model.predict(r,l,angles)
             print("Infer time gaze is {} s".format(time.time()-start))
             start= time.time()
-            print("Move time is {} s ".format(time.time()-start))
             move(vector)
-            
+            print("Move time is {} s ".format(time.time()-start))
         out.write(frame)
         cv2.imshow('frame',frame)               
         if feeder.input_type == 'image':
