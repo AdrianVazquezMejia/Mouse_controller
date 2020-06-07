@@ -5,9 +5,6 @@ This has been provided just to give you an idea of how to structure your model c
 from openvino.inference_engine import IENetwork, IECore
 import numpy as np
 import cv2
-import sys
-import os
-import time
 import logging as log
 def roundx(x):
     if x[0]<0:

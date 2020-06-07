@@ -9,8 +9,6 @@ import cv2
 import os
 import sys
 import logging as log
-import time
-import multiprocessing as mp
 moveto=['up','down', 'left', 'right']
 def build_argparser():
     parser= ArgumentParser()
