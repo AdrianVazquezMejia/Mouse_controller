@@ -59,7 +59,8 @@ class Model_pose:
         frame = frame.reshape(1,*frame.shape)
         return frame
 
-    def preprocess_output(self, outputs):
+    @staticmethod
+    def preprocess_output(outputs):
         '''
         Before feeding the output of this model to the next model,
         you might have to preprocess the output. This function is where you can do that.

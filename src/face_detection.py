@@ -55,11 +55,13 @@ class Model_face_detection:
             crop_frame =self.crop(coords,image)
         return out_frame, crop_frame
 
-    def draw_outputs(self, coords, image):
+    @staticmethod
+    def draw_outputs(coords, image):
         for coord in coords:
             cv2.rectangle(image,(coord[0],coord[1]),(coord[2],coord[3]),(0,255,0),1)
         return image
-    def crop(self,coords, image):
+    @staticmethod
+    def crop(coords, image):
         for coord in coords:
             crop_image= image[coord[1]:coord[3],coord[0]:coord[2]]
         return crop_image        
