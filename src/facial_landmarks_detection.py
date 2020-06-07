@@ -51,7 +51,8 @@ class Model_landmarks:
             out_frame = self.draw_outputs(coords, image)            
         return out_frame, reye, leye
         
-    def crop_eyes(self, coord, image):
+    @staticmethod
+    def crop_eyes(coord, image):
         delta = 30
         left = image[coord[3]-delta:coord[3]+delta,coord[2]-delta:coord[2]+delta]
         if coord[0]<30:
@@ -60,7 +61,8 @@ class Model_landmarks:
             right = image[coord[1]-delta:coord[1]+delta,coord[0]-delta:coord[0]+delta]     
         return right, left
 
-    def draw_outputs(self, coords, image):
+    @staticmethod
+    def draw_outputs(coords, image):
         #for coord in coords:
         cv2.circle(image,(coords[0],coords[1]),2,(0,0,255),2)
         cv2.circle(image,(coords[2],coords[3]),2,(0,0,255),2)

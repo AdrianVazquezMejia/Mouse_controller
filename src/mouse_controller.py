@@ -19,7 +19,8 @@ class MouseController:
 
     def move(self, x, y):
         pyautogui.moveRel(x*self.precision, -1*y*self.precision, duration=self.speed)
-    def position(self):
+    @staticmethod
+    def position():
         x, y= pyautogui.position()
         return x,y
 def mover(x,y):
