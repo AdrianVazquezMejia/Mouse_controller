@@ -11,7 +11,7 @@ import sys
 import logging as log
 import time
 import multiprocessing as mp
-moveto=['arriba','abajo', 'izquierda', 'derecha']
+moveto=['up','down', 'left', 'right']
 def build_argparser():
     parser= ArgumentParser()
     parser.add_argument("--face", required=False,help= "Face detecion model path ",default='/home/adrian-estelio/Documents/vision/intel/face-detection-retail-0005/FP32-INT8/face-detection-retail-0005')
@@ -20,10 +20,10 @@ def build_argparser():
     parser.add_argument("--gaze", required=False,help= "Gaze estimation model path ",default='/home/adrian-estelio/Documents/vision/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002')
     parser.add_argument("--input", required=False,help="Input: image or  video path or webcam (CAM) ", default='CAM')#/home/adrian-estelio/Documents/vision/Mouse_controller/resources/image.jpg')
     parser.add_argument("--visual_o",required=False,help="Flag to display face: True or False", default="True")
+    parser.add_argument("--device",required=False,help="Device to run the inference", default="CPU")
     return parser
 def move(coor):
     mouse= MouseController('high','fast')
-    log.info("Moving")
     if coor[0]<-0.33 and coor[1]>-0.05 and coor[1]<0.05:
         log.info("Moving to %s",moveto[3])
         mouse.move(1,0)
@@ -38,13 +38,13 @@ def move(coor):
         mouse.move(0,-1)
 def infer_on_stream(args):
 
-    face_model = Model_face_detection(args.face)
+    face_model = Model_face_detection(args.face,device=args.device)
     face_model.load_model()
-    landmarks_model = Model_landmarks(args.landmarks)
+    landmarks_model = Model_landmarks(args.landmarks,device=args.device)
     landmarks_model.load_model()
-    head_model = Model_pose(args.head)
+    head_model = Model_pose(args.head,device=args.device)
     head_model.load_model()
-    gaze_model = Model_gaze(args.gaze)
+    gaze_model = Model_gaze(args.gaze,device=args.device)
     gaze_model.load_model()
     
     if args.input == 'CAM':
@@ -88,6 +88,7 @@ def infer_on_stream(args):
     out.release()
     feeder.close
 def main():
+    log.basicConfig(level=log.INFO)
     log.info("Aplication started")
     args =build_argparser().parse_args()
     infer_on_stream(args)
