@@ -18,7 +18,9 @@ class Model_pose:
         self.model_structure =model_name+'.xml'
         self.model_weights =model_name+'.bin'
         self.device = device
-        
+        self.output_blob = None
+        self.height = None
+        self.width = None         
 
     def load_model(self):
         '''

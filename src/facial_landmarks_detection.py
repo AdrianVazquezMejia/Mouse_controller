@@ -20,6 +20,7 @@ class Model_landmarks:
         self.model_weights =model_name+'.bin'
         self.device = device
         self.threshold = threshold
+        self.output_blob = None
 
     def load_model(self):
         '''crop

@@ -25,6 +25,10 @@ class Model_face_detection:
         self.model_weights =model_name+'.bin'
         self.device = device
         self.threshold = threshold
+        self.output_blob = None
+        self.height = None 
+        self.width = None 
+        self.channels = None 
 
     def load_model(self):
         '''

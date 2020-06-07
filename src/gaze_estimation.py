@@ -18,6 +18,7 @@ class Model_gaze:
         self.model_structure =model_name+'.xml'
         self.model_weights =model_name+'.bin'
         self.device = device
+        self.output_blob = None
 
     def load_model(self):
         '''
