@@ -26,7 +26,8 @@ Now you should watch a windows with my face making some weird movements and your
 `Model_controller.py` and `input_feeder.py` have a similar function.
 
 * Inputs argument uses and help can be get using `python3 main.py --help`:
-``usage: main.py [-h] [--face FACE] [--landmarks LANDMARKS] [--head HEAD]
+```
+usage: main.py [-h] [--face FACE] [--landmarks LANDMARKS] [--head HEAD]
                [--gaze GAZE] [--input INPUT] [--visual_o VISUAL_O]
                [--device DEVICE]
 
@@ -38,7 +39,8 @@ optional arguments:
   --head HEAD           head pose estimation model path
   --gaze GAZE           Gaze estimation model path
   --input INPUT         Input: image or video path or webcam (CAM)
-  --visual_o VISUAL_O   Flag to display face: True or False``
+  --visual_o VISUAL_O   Flag to display face: True or False
+  ```
 
 ## Benchmarks
 * Loading time: The FP32 models takes less time to load. And CPU is faster in loading than other hardware.
