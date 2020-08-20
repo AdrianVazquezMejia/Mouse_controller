@@ -14,6 +14,7 @@ To use this project:
 -  gaze-estimation-adas-0002
 *  Open the file `mouse.sh` in the 3rd line input the paths accodingly. You can use the default to get help about it.
 * To run the project use the command `source mouse.sh`.
+Note: It is calibrated regarding the demo
 
 ## Demo
 There is a video input demo which the  mouse control is calibrated which is `local4.mp4`.
